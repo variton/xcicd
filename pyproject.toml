@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "xcicd"
+version = "0.1.0"
+description = "A set of tools for GitHub CI/CD Actions"
+readme = "README.md"
+requires-python = ">=3.10"
+
+authors = [
+  { name = "Robert King", email = "varitonium@gmail.com" }
+]
+
+license = { text = "MIT" }
+
+keywords = [
+  "python",
+  "utilities",
+  "filesystem",
+  "configuration",
+  "json"
+]
+
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
+
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+  "pytest-cov>=5.0",
+  "ruff>=0.5",
+  "build>=1.2"
+]
+
+[project.urls]
+Homepage = "https://github.com/variton/xcicd"
+Repository = "https://github.com/variton/xcicd"
+Issues = "https://github.com/variton/xcicd/issues"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E","F","I"]
+
+[tool.coverage.run]
+source = ["src/xcicd"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+
+#[project.scripts]
+#xcicd-bdeleter = "xcicd.g.main:main"
+
