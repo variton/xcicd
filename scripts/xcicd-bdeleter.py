@@ -5,12 +5,12 @@ from xcicd.github.git_mgr import GitMgr
 
 def main(args:list[str]) -> None:
     repo = args[1]
-    branch = args[2]
+    current_branch = args[2]
     token = args[3]
     
     try:
-        git_mgr = GitMgr(repo,branch,toke)
-        git_mgr.remove()
+        git_mgr = GitMgr(repo,token)
+        git_mgr.remove_branch(current_branch)
     except Exception as e:
         print(e)
        
