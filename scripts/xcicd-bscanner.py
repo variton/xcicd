@@ -6,10 +6,10 @@ import sys
 from xcicd.bscanner import main
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 4:
         raise RuntimeError(
             "missing arguments:\n"
-            "xcicd-bscanner CURRENT_BRANCH_NAME LAST_COMMIT"
+            "xcicd-bscanner PROJECT_ID CURRENT_BRANCH_NAME LAST_COMMIT"
         )
     try:
         main(sys.argv)

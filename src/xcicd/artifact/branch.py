@@ -14,7 +14,10 @@ class Branch:
                 f"Invalid branch name format: {name}"
             )
 
-    def is_valid(self) -> bool:
+    def is_valid(self,project_id:str) -> bool:
+        if self.project_ != project_id:
+            return False
+
         if len(self.project_) != 3 or self.project_.isupper() != True:
             return False 
 
