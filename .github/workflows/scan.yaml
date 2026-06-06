@@ -1,0 +1,106 @@
+name: branch scanner
+
+on:
+  workflow_call:
+    inputs:
+      project:
+        required: true
+        type: string
+      repository:
+        required: true
+        type: string
+      branch:
+        required: true
+        type: string
+      label:
+        required: true
+        type: string
+
+    secrets:
+      CITK:
+        required: true
+      CI_WEBHOOK_URL:
+        required: true
+
+env:
+  PYTHONPATH: ${{ github.workspace }}/xcicd/src
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ghcr.io/variton/ici:1.0
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.CITK }}
+
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v4
+        with:
+          path: caller
+
+      - name: Checkout xcicd repository
+        uses: actions/checkout@v4
+        with:
+          repository: variton/xcicd
+          ref: main
+          token: ${{ secrets.CITK }}
+          path: xcicd
+
+      - name: Run scanner
+        working-directory: xcicd
+        run: |
+          python3.14 scripts/xcicd-bscanner.py \
+            "${{ inputs.project }}" \
+            "${{ inputs.repository }}" \
+            "${{ inputs.branch }}" \
+            "${{ inputs.label }}"
+
+  verify:
+    needs: scan
+    if: ${{ needs.scan.result == 'success' }}
+
+    runs-on: ubuntu-latest
+
+    container:
+      image: ghcr.io/variton/ici:1.0
+      credentials:
+        username: ${{ github.actor }}
+        password: ${{ secrets.CITK }}
+
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v4
+        with:
+          path: caller
+
+      - name: Checkout xcicd repository
+        uses: actions/checkout@v4
+        with:
+          repository: variton/xcicd
+          ref: main
+          token: ${{ secrets.CITK }}
+          path: xcicd
+
+      - name: Run unit tests
+        working-directory: xcicd
+        run: |
+          ls -l
+          echo "Running tests ..."
+
+  notify-failure:
+    needs:
+      - scan
+      - verify
+
+    if: ${{ always() && contains(needs.*.result, 'failure') }}
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Notify Slack
+        uses: variton/xcicd/.github/actions/slack-failure@main
+        with:
+          webhook: ${{ secrets.CI_WEBHOOK_URL }}
