@@ -7,6 +7,7 @@ def test_valid_branch_is_accepted():
     main([
         "xcicd-bscanner",
         "ABC",
+        "repository",
         "ABC-123-DEV-DESC",
         "commit message",
     ])
@@ -17,6 +18,7 @@ def test_invalid_branch_is_rejected():
         main([
             "xcicd-bscanner",
             "ABC",
+            "repository",
             "ABC-ID-DEV-DESC",
             "commit message",
         ])
@@ -27,6 +29,7 @@ def test_project_mismatch_is_rejected():
         main([
             "xcicd-bscanner",
             "XYZ",
+            "repository",
             "ABC-123-DEV-DESC",
             "commit message",
         ])
@@ -37,6 +40,7 @@ def test_malformed_branch_is_rejected():
         main([
             "xcicd-bscanner",
             "ABC",
+            "repository",
             "invalid-branch",
             "commit message",
         ])
