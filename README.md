@@ -21,7 +21,7 @@ git clone git@github.com:variton/xcicd.git
     *make sure you have the rights to pull the docker image*
 
 ```
-docker pull ghcr.io/variton/ixcicd:1.0
+docker pull ghcr.io/variton/ici:1.0
 ```
 
 ### Set the python path
