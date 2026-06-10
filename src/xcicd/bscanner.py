@@ -7,6 +7,9 @@ def main(args: list[str]) -> None:
     current_branch_name = args[3]
     last_commit_message = args[4]
 
+    if current_branch_name == "main" or "master":
+        return
+
     print(project_id)
     print(repository)
     print(current_branch_name)
