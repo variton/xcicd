@@ -10,11 +10,6 @@ def main(args: list[str]) -> None:
     if current_branch_name == "main" or current_branch_name == "master":
         return
 
-    print(project_id)
-    print(repository)
-    print(current_branch_name)
-    print(last_commit_message)
-    
     try:
         branch = Branch(current_branch_name)
         branch.is_valid(project_id)
