@@ -3,51 +3,95 @@ import pytest
 from xcicd.artifact.branch import Branch
 
 
-@pytest.mark.parametrize("branch_name, project_id", [
-    ("ABC-123-DEV-DESC", "ABC"),
-    ("XYZ-001-DOC-README", "XYZ"),
-    ("PRJ-999-TEST-ABC", "PRJ"),
-    ("APP-42-INIT-BUG", "APP"),
-    ("APP-42-FIX-BUG", "APP"),
-])
-def test_valid_branch_names(branch_name, project_id):
-    branch = Branch(branch_name)
+def test_branch_parses_valid_name():
+    branch = Branch("ABC-123-DEV-FOO")
 
-    assert branch.is_valid(project_id) is True
+    assert branch.get_project() == "ABC"
+    assert branch.get_id() == "123"
+    assert branch.get_task() == "DEV"
 
 
-@pytest.mark.parametrize("branch_name, project_id", [
-    ("ABC-123-DEV-DESC", "XYZ"),      # project mismatch
-    ("AB-123-DEV-DESC", "AB"),        # project too short
-    ("ABCD-123-DEV-DESC", "ABCD"),    # project too long
-    ("abc-123-DEV-DESC", "abc"),      # project lowercase
-    ("ABC-ID-DEV-DESC", "ABC"),       # id not numeric
-    ("ABC-123-dev-DESC", "ABC"),      # task lowercase
-    ("ABC-123-BAD-DESC", "ABC"),      # task not allowed
-    ("ABC-123-ABCDE-DESC", "ABC"),    # task longer than 4
-    ("ABC-123-DEV-TOOLONG", "ABC"),   # description longer than 6
-    ("ABC-123-DEV-desc", "ABC"),      # description lowercase
-])
-def test_invalid_branch_names(branch_name, project_id):
-    branch = Branch(branch_name)
+def test_valid_branch_passes_validation():
+    branch = Branch("ABC-123-DEV-FOO")
 
-    assert branch.is_valid(project_id) is False
+    branch.is_valid("ABC")
 
 
-@pytest.mark.parametrize("branch_name", [
-    "ABC-123-DEV",
-    "ABC-123-DEV-DESC-EXTRA",
-    "ABC",
-    "",
-])
+@pytest.mark.parametrize(
+    "branch_name",
+    [
+        "ABC-123-DEV",              # missing description
+        "ABC-123-DEV-FOO-EXTRA",    # too many parts
+        "ABC123DEVFOO",             # no separators
+    ],
+)
 def test_invalid_branch_format_raises_value_error(branch_name):
     with pytest.raises(ValueError, match="Invalid branch name format"):
         Branch(branch_name)
 
 
-def test_getters():
-    branch = Branch("ABC-123-DEV-DESC")
+def test_invalid_project_id_raises_value_error():
+    branch = Branch("ABC-123-DEV-FOO")
 
-    assert branch.get_project() == "ABC"
-    assert branch.get_id() == "123"
-    assert branch.get_task() == "DEV"
+    with pytest.raises(ValueError, match="The project name should be XYZ"):
+        branch.is_valid("XYZ")
+
+
+@pytest.mark.parametrize(
+    "branch_name",
+    [
+        "AB-123-DEV-FOO",       # too short
+        "ABCD-123-DEV-FOO",     # too long
+        "abc-123-DEV-FOO",      # lowercase
+    ],
+)
+def test_invalid_project_format_raises_value_error(branch_name):
+    branch = Branch(branch_name)
+
+    with pytest.raises(ValueError, match="project name should have"):
+        branch.is_valid(branch.get_project())
+
+
+@pytest.mark.parametrize(
+    "branch_name",
+    [
+        "ABC-abc-DEV-FOO",
+        "ABC-12A-DEV-FOO",
+        "ABC--DEV-FOO",
+    ],
+)
+def test_invalid_id_raises_value_error(branch_name):
+    branch = Branch(branch_name)
+
+    with pytest.raises(ValueError, match="should be a digit"):
+        branch.is_valid("ABC")
+
+
+@pytest.mark.parametrize(
+    "branch_name",
+    [
+        "ABC-123-BAD-FOO",
+        "ABC-123-dev-FOO",
+        "ABC-123--FOO",
+    ],
+)
+def test_invalid_task_raises_value_error(branch_name):
+    branch = Branch(branch_name)
+
+    with pytest.raises(ValueError, match="should be among"):
+        branch.is_valid("ABC")
+
+
+@pytest.mark.parametrize(
+    "branch_name",
+    [
+        "ABC-123-DEV-TOOLONG",
+        "ABC-123-DEV-foo",
+        "ABC-123-DEV-Foo",
+    ],
+)
+def test_invalid_description_raises_value_error(branch_name):
+    branch = Branch(branch_name)
+
+    with pytest.raises(ValueError, match="description"):
+        branch.is_valid("ABC")

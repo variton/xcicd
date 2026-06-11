@@ -87,8 +87,7 @@ jobs:
       - name: Run unit tests
         working-directory: xcicd
         run: |
-          ls -l
-          echo "Running tests ..."
+          pytest
 
   notify-failure:
     needs:
