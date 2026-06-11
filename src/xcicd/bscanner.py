@@ -7,17 +7,18 @@ def main(args: list[str]) -> None:
     current_branch_name = args[3]
     last_commit_message = args[4]
 
-    if current_branch_name == "main" or "master":
+    if current_branch_name == "main" or current_branch_name == "master":
         return
 
     print(project_id)
     print(repository)
     print(current_branch_name)
     print(last_commit_message)
-
-    branch = Branch(current_branch_name)
-
-    if not branch.is_valid(project_id):
+    
+    try:
+        branch = Branch(current_branch_name)
+        branch.is_valid(project_id)
+    except ValueError as e:
         raise RuntimeError(
-            f"invalid branch name : {current_branch_name}"
+            f"Invalid branch name : {current_branch_name} -> {str(e)}"
         )
