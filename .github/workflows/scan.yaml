@@ -45,7 +45,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: variton/xcicd
-          ref: main
+          ref: ${{ github.ref_name }}
           token: ${{ secrets.CITK }}
           path: xcicd
 
