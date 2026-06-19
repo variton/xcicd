@@ -1,6 +1,6 @@
 """branch.py module."""
 
-BTASKS = ["DEV","DOC","INIT","TEST","UPE","FIX"]
+BTASKS = ["DEV","DOC","INIT","TEST","UPE","FIX","RES"]
 
 class Branch:
     """Branch class."""
